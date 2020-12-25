@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="Recoil_Control.cpp" />
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

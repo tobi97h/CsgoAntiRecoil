@@ -134,33 +134,14 @@ std::vector<Recoil_Weapon> read_weapons() {
 }
 
 void move(float x, float y) {
-	
-	int steps = 8;
-	float stepx = floor(x / steps);
-	float stepy = floor(y / steps);
-	
-	// last step will take rounds into account
-	for (int i = 0; i < steps -1; i++) {
-		INPUT tp;
-		tp.type = INPUT_MOUSE;
-		tp.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_MOVE_NOCOALESCE;
-		tp.mi.mouseData = NULL;
-		tp.mi.dwExtraInfo = NULL;
-		tp.mi.time = NULL;
-		tp.mi.dx = stepx;
-		tp.mi.dy = stepy;
-
-		SendInput(1, &tp, sizeof(tp));
-	}
-
 	INPUT tp;
 	tp.type = INPUT_MOUSE;
 	tp.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_MOVE_NOCOALESCE;
 	tp.mi.mouseData = NULL;
 	tp.mi.dwExtraInfo = NULL;
 	tp.mi.time = NULL;
-	tp.mi.dx = x - (stepx * (steps -1));
-	tp.mi.dy = y - (stepy * (steps - 1));
+	tp.mi.dx = x;
+	tp.mi.dy = y;
 	SendInput(1, &tp, sizeof(tp));
 	
 }
@@ -186,6 +167,8 @@ void apply_records(std::vector<Record> records) {
 	file.read((char*)&factor_x, sizeof(float));
 	file.read((char*)&factor_y, sizeof(float));
 
+	bool paused = false;
+
 	while (true) {
 		// atleast somewhat drosseln
 		nanosleep(1);
@@ -195,21 +178,27 @@ void apply_records(std::vector<Record> records) {
 			break;
 		}
 
+		// unpause when swapping to main weapon
+		if (GetAsyncKeyState(0x31) & 0x8000) {
+			paused = false;
+		}
+
+		// pause when swapping to others
+		for (int i = 0; i < 3; i++) {
+			if (GetAsyncKeyState(0x32 + i) & 0x8000) {
+				paused = true;
+				break;
+			}
+		}
+
 		float movex_px_pool = 0;
 		float movey_px_pool = 0;
 
-		long down_since;
-
 		// iterate here as fast as possible
-		for (int i = 1; i < records.size() && GetAsyncKeyState(VK_LBUTTON); i++) {
+		for (int i = 1; i < records.size() && GetAsyncKeyState(VK_LBUTTON) & 0x8000 && !paused; i++) {
 
 			auto start_ts = std::chrono::high_resolution_clock::now();
 
-
-			if (i == 1) {
-				down_since = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			}
-			long down_total = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - down_since;
 
 			// when mouse is continously pressed
 			Record previous = records[i - 1];
@@ -231,23 +220,23 @@ void apply_records(std::vector<Record> records) {
 
 			// y adjust
 			float fully_px = floor(movey_px_pool);
-			if (down_total > 150) {
-				if (fullx_px > 1 || fullx_px < -1) {
 
-					move(fullx_px, 0);
+			if (fullx_px > 1 || fullx_px < -1) {
 
-					// remove the full pixels from the pool since they have been moved
-					movex_px_pool -= fullx_px;
-				}
+				move(fullx_px, 0);
 
-				if (fully_px > 1 || fully_px < -1) {
-
-					move(0, fully_px);
-
-					// remove the full pixels from the pool since they have been moved
-					movey_px_pool -= fully_px;
-				}
+				// remove the full pixels from the pool since they have been moved
+				movex_px_pool -= fullx_px;
 			}
+
+			if (fully_px > 1 || fully_px < -1) {
+
+				move(0, fully_px);
+
+				// remove the full pixels from the pool since they have been moved
+				movey_px_pool -= fully_px;
+			}
+			
 
 			LONGLONG passed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_ts).count();
 			LONGLONG left = ns_diff_recordings - passed;
@@ -267,7 +256,7 @@ void recoil() {
 	while (true) {
 		for (int i = 0; i < weapons.size(); i++) {
 			Recoil_Weapon rw = weapons[i];
-			std::cout << i << ". " << rw.path << " num. records: " << rw.record.size() << std::endl;
+			std::cout << i +1 << ". " << rw.path << " num. records: " << rw.record.size() << std::endl;
 		}
 
 		int weapon;
@@ -277,13 +266,16 @@ void recoil() {
 		while (query) {
 			for (int i = 0; i < 9; i++) {		
 				if (GetAsyncKeyState(0x30 + i) & 0x8000) {
-					std::cout << i << ": " << weapons[i].path <<std::endl;
+					std::cout << i  << ": " << weapons[i-1].path <<std::endl;
 					query = false;
-					weapon = i;
+					weapon = i-1;
 				}
 			}
 			Sleep(1);
 		}
+		
+		// wait key up
+		Sleep(500);
 
 
 		if (weapon < 0 || weapon > weapons.size() - 1) {
@@ -296,8 +288,6 @@ void recoil() {
 		apply_records(rw.record);
 
 	}
-
-
 }
 
 void record() {
@@ -340,10 +330,10 @@ void record() {
 			previous_punch_x = punch.x;
 			previous_punch_y = punch.y;
 
-			// one ms
-			nanosleep(1000000);
-
+			// 2/10tel einer millisekunde - fühlt sich nach sweetspot für meinen pc an
+			nanosleep(200000);
 		}
+
 		else if (GetAsyncKeyState(VK_TAB) & 0x8000) {
 			if (start) {
 				break;
