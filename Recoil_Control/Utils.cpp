@@ -1,9 +1,5 @@
-#include <iostream>
-#include "Windows.h"
-#include "TlHelp32.h"
-#include "Offsets.cpp"
-#include <chrono>
-#include <thread>
+
+#include "Utils.h"
 
 uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName)
 {
@@ -69,4 +65,19 @@ BOOLEAN nanosleep(LONGLONG ns) {
 		passed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_ts).count();
 	} while (passed <= ns);
 	return TRUE;
+}
+
+
+
+void move(float x, float y) {
+	INPUT tp;
+	tp.type = INPUT_MOUSE;
+	tp.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_MOVE_NOCOALESCE;
+	tp.mi.mouseData = NULL;
+	tp.mi.dwExtraInfo = NULL;
+	tp.mi.time = NULL;
+	tp.mi.dx = x;
+	tp.mi.dy = y;
+	SendInput(1, &tp, sizeof(tp));
+
 }
