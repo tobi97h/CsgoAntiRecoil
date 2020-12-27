@@ -46,12 +46,14 @@ void apply_records(std::vector<Record> records) {
 			}
 		}
 
+		/*
 		// buying (B) || manually (P) || Swap Q
 		if (GetAsyncKeyState(0x42) & 0x8000 || GetAsyncKeyState(0x50) & 0x8000 || GetAsyncKeyState(0x51) & 0x8000) {
 			paused = !paused;
 			std::cout << "paused: " << paused << std::endl;
 			Sleep(500);
 		}
+		*/
 
 		float movex_px_pool = 0;
 		float movey_px_pool = 0;

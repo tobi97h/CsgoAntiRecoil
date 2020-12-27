@@ -1,5 +1,6 @@
 
 #include "Utils.h"
+#include <iostream>
 
 uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName)
 {
@@ -61,9 +62,9 @@ BOOLEAN nanosleep(LONGLONG ns) {
 	auto start_ts = std::chrono::high_resolution_clock::now();
 	LONGLONG passed;
 	do {
-		std::this_thread::sleep_for(std::chrono::nanoseconds(0));
 		passed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_ts).count();
 	} while (passed <= ns);
+	std::cout << passed << std::endl;
 	return TRUE;
 }
 
