@@ -16,7 +16,7 @@ class Weapon:
 meth ='cv2.TM_CCOEFF_NORMED'
 weapons_dir = "weapons1080p";
 threshold = 0.3
-sleep = 0.01 # 1ms
+sleep = 0.1 # 1ms
 
 sift = cv2.SIFT_create()
 bf = cv2.BFMatcher()
@@ -52,7 +52,7 @@ with mss() as sct:
         for weapon in weapons:
             wc = weapons[weapon]
             # first comes the big picture, the soruce, then what you want to find in it
-            matches = flann.knnMatch(des,wc.des,k=2)
+            matches = bf.knnMatch(des,wc.des,k=2)
             # Apply ratio test
             good = []
             for m,n in matches:
