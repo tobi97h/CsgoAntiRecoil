@@ -64,7 +64,6 @@ BOOLEAN nanosleep(LONGLONG ns) {
 	do {
 		passed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_ts).count();
 	} while (passed <= ns);
-	std::cout << passed << std::endl;
 	return TRUE;
 }
 
