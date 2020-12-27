@@ -8,10 +8,19 @@
 
 * "fps_max 144" in auto cfg of csgo 
 
-# install opencv
 
-* `git clone https://github.com/microsoft/vcpkg`
+# Concept
 
-* run `bootstrap-vcpkg.bat` && `vcpkg integrate install`
+## Python Opencv
 
-* run `vcpkg install opencv[contrib]:x86-windows` 
+* Has Screenshots of all the weapon toolbars
+
+* Regualarly takes screencap of csgo and feature matches against the toolbars
+
+* Sends best match to c++ recoil algo
+
+## C++ Recoil Algo
+
+* Ability to record recoil vectors
+
+* Ability to emulate mouse movements, nullifying the recoil vectors - without hooking in the game

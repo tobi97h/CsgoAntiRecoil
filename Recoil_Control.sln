@@ -10,22 +10,34 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "State_Recognition", "State_Recognition\State_Recognition.pyproj", "{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Debug|x64.ActiveCfg = Debug|x64
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Debug|x64.Build.0 = Debug|x64
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Debug|x86.ActiveCfg = Debug|Win32
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Debug|x86.Build.0 = Debug|Win32
+		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Release|Any CPU.ActiveCfg = Release|Win32
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Release|x64.ActiveCfg = Release|x64
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Release|x64.Build.0 = Release|x64
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Release|x86.ActiveCfg = Release|Win32
 		{F75B79D9-18B2-46B3-89EE-3E9DE6990368}.Release|x86.Build.0 = Release|Win32
+		{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}.Release|x64.ActiveCfg = Release|Any CPU
+		{1ACD9AF5-2AF8-44A4-86C9-2047E6F71832}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

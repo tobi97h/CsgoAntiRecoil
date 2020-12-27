@@ -161,10 +161,6 @@
     <ClInclude Include="Record.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="full.jpg" />
-    <Image Include="weapon.jpg" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
