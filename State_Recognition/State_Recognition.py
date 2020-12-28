@@ -89,7 +89,7 @@ class Recognizer:
  
             self.sort_send_res(results)
 
-            time.sleep(1)
+            time.sleep(0.1)
 
 
 
