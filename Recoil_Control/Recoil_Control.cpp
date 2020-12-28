@@ -22,7 +22,7 @@ int main()
 
 		std::cout << "1. Calibrate - Determines vector to mouse movement factor" << std::endl
 			<< "2. Record recoil graph - Empty a magazine of your weapon of choice" << std::endl
-			<< "3. RCS - Start State_Recognition once promptet" << std::endl;
+			<< "3. RCS - Start State_Recognition if no error" << std::endl;
 
 		int option;
 

@@ -70,8 +70,13 @@ void Recoil::loop() {
 	}
 }
 void Recoil::set_current(const char* id) {
+	Recoil_Weapon* current = current_weapon.load();
+
 	if (strcmp("nothing matched", id) == 0) {
-		current_weapon.store(NULL);
+		if (current != NULL) {
+			current_weapon.store(NULL);
+			std::cout << "nothing matched" << std::endl;
+		}
 		return;
 	}
 
@@ -80,20 +85,22 @@ void Recoil::set_current(const char* id) {
 		Recoil_Weapon* rw = &weapons[i];
 		if (strcmp(rw->name.c_str(), id) == 0) {
 			// found the weapon
-			current_weapon.store(rw);
-			std::cout << "set current:" << rw->name << std::endl;
+			if (rw != current) {
+				current_weapon.store(rw);
+				std::cout << "set new current:" << rw->name << std::endl;
+			}
 			found = true;
 			break;
 		}
 	}
 	if (!found) {
-		std::cout << "no fitting recording found: " << id << std::endl;
+		std::cerr << "no fitting recording found: " << id << std::endl;
 	}
 };
 
 Recoil::Recoil() {
 	if (!std::filesystem::exists(cal_file)) {
-		std::cerr << "calibrate first" << std::endl;
+		std::cerr << "calibrate file missing" << std::endl;
 		return;
 	}
 	// read calibration factors
@@ -103,12 +110,11 @@ Recoil::Recoil() {
 
 	file.seekg(0, std::ios::beg);
 
-
 	file.read((char*)&factor_x, sizeof(float));
 	file.read((char*)&factor_y, sizeof(float));
 
 	if (this->factor_x == 0 || this->factor_y == 0) {
-		std::cerr << "not calibrated !" << std::endl;
+		std::cerr << "calibrate file corrupt !" << std::endl;
 	}
 	thread = std::thread(&Recoil::loop, this);
 }

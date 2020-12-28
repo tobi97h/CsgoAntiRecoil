@@ -56,8 +56,8 @@ void calibrate() {
 	float diff_x = view2.x - view1.x;
 	float diff_y = view2.y - view1.y;
 
-	if ((diff_x > 1 && diff_x < 1) || (diff_x > 1 && diff_x < 1)) {
-		std::cout << "something went wrong - maybe update offsets" << std::endl;
+	if ((diff_x > 1 && diff_x < 1) || (diff_y > 1 && diff_y < 1)) {
+		std::cerr << "something went wrong - maybe update offsets" << std::endl;
 		return;
 	}
 

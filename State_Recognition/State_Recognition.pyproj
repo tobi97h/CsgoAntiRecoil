@@ -25,8 +25,6 @@
     <Compile Include="State_Recognition.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ak-47.PNG" />
-    <Content Include="aug.PNG" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>

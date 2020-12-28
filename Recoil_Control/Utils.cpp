@@ -54,7 +54,6 @@ DWORD get_client_state(DWORD pId, HANDLE proc) {
 
 	ReadProcessMemory(proc, (DWORD*)state_offset, &state, sizeof(DWORD), NULL);
 
-
 	return state;
 }
 
@@ -69,7 +68,6 @@ BOOLEAN nanosleep(LONGLONG ns) {
 }
 
 
-
 void move(float x, float y) {
 	INPUT tp;
 	tp.type = INPUT_MOUSE;
@@ -80,5 +78,4 @@ void move(float x, float y) {
 	tp.mi.dx = x;
 	tp.mi.dy = y;
 	SendInput(1, &tp, sizeof(tp));
-
 }

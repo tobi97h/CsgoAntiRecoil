@@ -6,7 +6,7 @@
 
 * (Turn of csgo mouse wheel weapon swapping - otherwise it might get arkward)
 
-* "fps_max 144" in auto cfg of csgo 
+* "+fps_max 144" to launch options
 
 
 # Concept

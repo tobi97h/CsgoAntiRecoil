@@ -22,6 +22,9 @@ private:
     bool keep_running = true;
     void loop();
     Recoil* recoil = NULL;
+
+    const char* default_port = "5000";
+
 public:
     std::thread thread;
    
