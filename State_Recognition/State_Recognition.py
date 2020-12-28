@@ -19,7 +19,7 @@ def screen_lower_right(monitor):
 
     # halbieren, dritteln, vertikal und horizontal xD
     screenshot = np.hsplit(screenshot, 5)[4]
-    screenshot = np.vsplit(screenshot, 3)[2]
+    screenshot = np.vsplit(screenshot, 2)[1]
 
     thresh, bw = cv2.threshold(screenshot, 250,255,cv2.THRESH_BINARY)
     return bw
@@ -27,7 +27,7 @@ def screen_lower_right(monitor):
 class Recognizer:
 
     def __init__(self):
-        self.threshold = 0.3
+        self.threshold = 0.4
 
         # connect to recoil_control
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
