@@ -149,7 +149,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Calibrate.cpp" />
-    <ClCompile Include="Offsets.cpp" />
+    <ClCompile Include="Listener.cpp" />
+    <ClCompile Include="Offsets.h" />
     <ClCompile Include="Recoil.cpp" />
     <ClCompile Include="Recoil_Control.cpp" />
     <ClCompile Include="Record.cpp" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Calibrate.h" />
+    <ClInclude Include="Listener.h" />
     <ClInclude Include="Recoil.h" />
     <ClInclude Include="Record.h" />
     <ClInclude Include="Utils.h" />

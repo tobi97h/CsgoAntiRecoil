@@ -6,6 +6,7 @@
 #include "Windows.h"
 #include <filesystem>
 #include <iostream>
+
 struct Record {
 	LONGLONG timestamp;
 	float aimpunch_x;
@@ -14,9 +15,8 @@ struct Record {
 
 struct Recoil_Weapon {
 	std::vector<Record> record;
-	std::string path;
+	std::string name;
 };
-
 
 std::vector<Record> read_record(std::string filepath);
 

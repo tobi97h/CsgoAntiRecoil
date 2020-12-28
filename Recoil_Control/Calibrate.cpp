@@ -3,6 +3,18 @@
 
 void calibrate() {
 
+	std::cout << "!!! WARNING: WILL HOOK INTO CSGO !!!" << std::endl << "hit TAB to start calibrating, ESC to cancel" << std::endl; 
+
+	while (true) {
+		if (GetAsyncKeyState(VK_TAB) & 0x8000) {
+			continue;
+		}
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+			return;
+		}
+		Sleep(1);
+	}
+
 	DWORD pId = get_csgo_pid();
 	HANDLE proc = OpenProcess(PROCESS_VM_READ, FALSE, pId);
 
@@ -19,9 +31,8 @@ void calibrate() {
 	Sleep(1000);
 	std::cout << "calibrating in 1" << std::endl;
 	Sleep(1000);
-	// give the player some time to switch to the csgo window
 
-	std::cout << "calibrating" << std::endl;
+	std::cout << "calibrating..." << std::endl;
 
 	Vector_2d view1;
 	ReadProcessMemory(proc, (DWORD*)view_angles, &view1, sizeof(Vector_2d), NULL);
@@ -45,6 +56,11 @@ void calibrate() {
 	float diff_x = view2.x - view1.x;
 	float diff_y = view2.y - view1.y;
 
+	if ((diff_x > 1 && diff_x < 1) || (diff_x > 1 && diff_x < 1)) {
+		std::cout << "something went wrong - maybe update offsets" << std::endl;
+		return;
+	}
+
 	float x_factor = 100.0f / diff_x;
 	float y_factor = 100.0f / diff_y;
 
@@ -56,7 +72,7 @@ void calibrate() {
 
 	file.close();
 
-	std::cout << "calibrated" << std::endl;
+	std::cout << "calibrated successfully" << std::endl;
 }
 
 

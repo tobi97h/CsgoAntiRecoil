@@ -1,6 +1,7 @@
 #include "Record.h"
 #include "Utils.h"
 
+/* read the recorded recoil graphs of a weapon, from file */
 std::vector<Record> read_record(std::string filepath) {
 
 	std::vector<Record> records;
@@ -21,6 +22,7 @@ std::vector<Record> read_record(std::string filepath) {
 
 }
 
+/* reads all recoil graphs stored in the graph folder */
 std::vector<Recoil_Weapon> read_weapons() {
 	std::vector<Recoil_Weapon> weapons;
 	for (const auto& entry : std::filesystem::directory_iterator(record_path)) {
@@ -28,8 +30,10 @@ std::vector<Recoil_Weapon> read_weapons() {
 		std::string path = entry.path().string();
 		std::vector<Record> record = read_record(path);
 
+		std::size_t pos = path.find("\\") + 1;
+
 		Recoil_Weapon rw;
-		rw.path = path;
+		rw.name = path.substr(pos);
 		rw.record = record;
 		weapons.push_back(rw);
 	}
@@ -37,13 +41,28 @@ std::vector<Recoil_Weapon> read_weapons() {
 	return weapons;
 }
 
+/* records a recoil pattern for the specified weapon */
 void record() {
 
+	// create the directory if it doesn't exist yet
 	std::filesystem::create_directory("weapons");
 
-	std::cout << "enter weapon name:" << std::endl;
+	std::cout << "Weapon name - must correspond to the image file name of the state recognition (without the file ending):" << std::endl;
+
 	std::string weapon_name;
 	std::cin >> weapon_name;
+
+	std::cout << "!!! WARNING: WILL HOOK INTO CSGO !!!" << std::endl << "hit TAB to start recording, ESC to cancel. Simply fire an entire magazine with your weapon (without moving the mouse) and hit tab afterwards to safe the recording" << std::endl;
+
+	while (true) {
+		if (GetAsyncKeyState(VK_TAB) & 0x8000) {
+			continue;
+		}
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+			return;
+		}
+		Sleep(1);
+	}
 
 	DWORD pId = get_csgo_pid();
 	HANDLE proc = OpenProcess(PROCESS_VM_READ, FALSE, pId);
@@ -57,12 +76,11 @@ void record() {
 	float previous_punch_x = 0;
 	float previous_punch_y = 0;
 
-	std::cout << "now get ingame. hit TAB to start, and empty a full magazine without moving the mouse. When finished hit TAB" << std::endl;
+	std::chrono::time_point<std::chrono::high_resolution_clock> start_ts = std::chrono::high_resolution_clock::now();
 
-	std::chrono::time_point<std::chrono::high_resolution_clock> start_ts;
 	bool start = false;
 	while (true) {
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 && start) {
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
 
 			Vector_2d punch;
 			ReadProcessMemory(proc, (DWORD*)aimpunch_angles, &punch, sizeof(Vector_2d), NULL);
@@ -77,30 +95,17 @@ void record() {
 			previous_punch_x = punch.x;
 			previous_punch_y = punch.y;
 
-			// 2/10tel einer millisekunde - fühlt sich nach sweetspot für meinen pc an
+			// afterwards we will need to process these recordings, we can't record too fast otherwise 
+			// we can't sync up properly in our recoil compensation
 			nanosleep(200000);
 		}
-
-		else if (GetAsyncKeyState(VK_TAB) & 0x8000) {
-			if (start) {
-				break;
-			}
-			else {
-				start = true;
-				// give some time for the player to release the key, otherwise this will trigger multiple times
-				Sleep(500);
-				std::cout << "will record once you start shooting" << std::endl;
-				start_ts = std::chrono::high_resolution_clock::now();
-			}
-		}
-
 	}
 
 	std::ofstream file((record_path + weapon_name).c_str(), std::ios::out | std::ios::binary);
 
 	int size = sizeof(Record) * records.size();
 	file.write((char*)records.data(), size);
-
 	file.close();
+
 	std::cout << "weapon recorded!" << std::endl;
 }

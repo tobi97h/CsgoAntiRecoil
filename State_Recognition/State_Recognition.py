@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 from mss import mss
 import os
 import time
+import socket
 
 class Weapon:
     def __init__(self,name, kp, des, img):
-        self.name = name
+        self.name = name.split('.')[0]
         self.kp = kp
         self.des = des
         self.img = img
@@ -16,18 +17,21 @@ class Weapon:
 meth ='cv2.TM_CCOEFF_NORMED'
 weapons_dir = "weapons1080p";
 threshold = 0.3
-sleep = 0.1 # 1ms
+sleep = 1 # ms
+
+connected = False
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+try:
+    s.connect(("localhost", 5000))
+    connected = True
+except:
+  print("An exception occurred") 
 
 sift = cv2.SIFT_create()
 bf = cv2.BFMatcher()
 
-FLANN_INDEX_KDTREE = 1
-index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
-search_params = dict(checks=50)   # or pass empty dictionary
-flann = cv2.FlannBasedMatcher(index_params,search_params)
-
 weapons = {}
-for template in os.listdir(weapons_dir):
+for template in os.listdir():
     print(template)
     px_color = cv2.imread(os.path.join(weapons_dir, template), cv2.IMREAD_GRAYSCALE)
     thresh, bw = cv2.threshold(px_color, 250,255,cv2.THRESH_BINARY);
@@ -43,6 +47,9 @@ with mss() as sct:
    
     while True:
         screenshot = cv2.cvtColor(np.array(sct.grab(monitor)), cv2.COLOR_RGB2GRAY)
+        screenshot = np.hsplit(screenshot, 5)[4]
+        screenshot = np.vsplit(screenshot, 3)[2]
+
         thresh, bw = cv2.threshold(screenshot, 250,255,cv2.THRESH_BINARY);
 
         kp, des = sift.detectAndCompute(bw,None)
@@ -60,7 +67,7 @@ with mss() as sct:
                     good.append(m)
 
 
-            results.append((wc, len(good), good));
+            results.append((wc, len(good)));
  
 
         res_sorted = sorted(results, key=lambda tup: tup[1])
@@ -68,10 +75,21 @@ with mss() as sct:
         winner = res_sorted[-1]
 
         if winner[1] > 5:
+           
+            bytes = (winner[0].name + '\0').encode()
+            if connected:
+                s.sendall(len(bytes).to_bytes(2, byteorder='little'))
+                s.sendall(bytes)
             print(winner[0].name + " " + str(winner[1]))
         else:
+            bytes = ('nothing matched\0').encode()
+            if connected:
+                s.sendall(len(bytes).to_bytes(2, byteorder='little'))
+                s.sendall(bytes)
             print("nothing matched")
 
 
         time.sleep(sleep)
         print()
+
+s.close()

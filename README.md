@@ -24,3 +24,7 @@
 * Ability to record recoil vectors
 
 * Ability to emulate mouse movements, nullifying the recoil vectors - without hooking in the game
+
+# Important!
+
+* recordings need to have the same name like screenshots of the weapons for matching (without the .PNG file ending)

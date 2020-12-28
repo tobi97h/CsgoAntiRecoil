@@ -1,19 +1,28 @@
-#include <iostream>
+/* needs to come first
+
+winsock2 redefinition different linkage
+
+I believe you are getting these errors because windows.h will include winsock.h.
+Reverse the order of your includes so that WinSock2.h comes before windows.h. 
+WinSock2.h has some #defines in it to keep windows.h from including winsock.h
+
+*/
+
+#include "Listener.h"
 
 #include "Utils.h"
 #include "Record.h"
 #include "Recoil.h"
 #include "Calibrate.h"
 
-
 int main()
 {
-	
+
 	while (true) {
 
-		std::cout << "1. Calibrate - Go ingame and just hold still" << std::endl
-			<< "2. Record Weapon" << std::endl
-			<< "3. RCS - Backspace to select other weapon" << std::endl;
+		std::cout << "1. Calibrate - Determines vector to mouse movement factor" << std::endl
+			<< "2. Record recoil graph - Empty a magazine of your weapon of choice" << std::endl
+			<< "3. RCS - Start State_Recognition once promptet" << std::endl;
 
 		int option;
 
@@ -28,10 +37,10 @@ int main()
 					break;
 				}
 			}
-			// dont spam loop
+			// tickrate query
 			Sleep(1);
 		}
-		// time to release the key
+		// some time to release the key
 		Sleep(500);
 
 		switch (option)
@@ -43,8 +52,12 @@ int main()
 			record();
 			break;
 		case 3:
-			recoil();
+			Recoil r;
+			Listener l(&r);
+			l.thread.join();
+			r.thread.join();
 			break;
 		}
 	}
+    
 }

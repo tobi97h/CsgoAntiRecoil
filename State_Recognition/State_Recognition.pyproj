@@ -25,10 +25,9 @@
     <Compile Include="State_Recognition.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="else.jpg" />
-    <Content Include="full.jpg" />
+    <Content Include="ak-47.PNG" />
+    <Content Include="aug.PNG" />
     <Content Include="requirements.txt" />
-    <Content Include="weapon_scaled.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">

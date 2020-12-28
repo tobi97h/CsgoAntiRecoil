@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cstddef>
 
+// created with csgo hazedumper
+
 // 2020-12-18 09:44:39.979242400 UTC
 
 constexpr ::std::int64_t timestamp = 1608284679;
