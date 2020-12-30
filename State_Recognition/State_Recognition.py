@@ -15,6 +15,7 @@ class Weapon:
 
 
 def screen_lower_right(monitor):
+ 
     screenshot = cv2.cvtColor(np.array(sct.grab(monitor)), cv2.COLOR_RGB2GRAY)
 
     # halbieren, dritteln, vertikal und horizontal xD
@@ -22,16 +23,27 @@ def screen_lower_right(monitor):
     screenshot = np.vsplit(screenshot, 2)[1]
 
     thresh, bw = cv2.threshold(screenshot, 250,255,cv2.THRESH_BINARY)
+
     return bw
 
 class Recognizer:
 
     def __init__(self):
         self.threshold = 0.4
+        self.min_matched = 10
+        self.last_matched = 0
+        self.ms_none_match = 4000
+        self.last_weapon = None
 
         # connect to recoil_control
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect(("localhost", 5000))
+        while True:
+            try:
+                self.s.connect(("localhost", 5000))
+                print("connected")
+                break;
+            except:
+                print("couldn't connect, trying again")
 
         # algos
         self.sift = cv2.SIFT_create()
@@ -43,6 +55,7 @@ class Recognizer:
     def set_weapons(self):
         weapons_dir = "weapons1080p"
 
+        print("loaded weapons")
         self.weapons = {}
         for template in os.listdir(weapons_dir):
             print(template)
@@ -51,20 +64,29 @@ class Recognizer:
             kp, des = self.sift.detectAndCompute(bw,None)
             wc = Weapon(template, kp, des, bw)
             self.weapons[template] = wc
+        print()
 
     def sort_send_res(self, results):
         res_sorted = sorted(results, key=lambda tup: tup[1])
 
         winner = res_sorted[-1]
 
-        if winner[1] > 5:
-            bytes = (winner[0].name + '\0').encode()
-            self.s.sendall(len(bytes).to_bytes(2, byteorder='little'))
-            self.s.sendall(bytes)
-        else:
+        ts_millis = time.time() * 1000
+
+        if winner[1] > self.min_matched:
+            if self.last_weapon is not winner[0]:
+                # we have a winner with more than min features
+                bytes = (winner[0].name + '\0').encode()
+                self.s.sendall(len(bytes).to_bytes(2, byteorder='little'))
+                self.s.sendall(bytes)
+                self.last_matched = ts_millis
+                self.last_weapon = winner[0]
+
+        elif ts_millis - self.last_matched > self.ms_none_match:
             bytes = ('nothing matched\0').encode()
             self.s.sendall(len(bytes).to_bytes(2, byteorder='little'))
             self.s.sendall(bytes)
+            self.last_weapon = None
 
     def loop(self, monitor):
         while True:

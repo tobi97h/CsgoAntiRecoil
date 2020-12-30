@@ -52,11 +52,12 @@ void record() {
 	std::string weapon_name;
 	std::cin >> weapon_name;
 
-	std::cout << "!!! WARNING: WILL HOOK INTO CSGO !!!" << std::endl << "hit TAB to start recording, ESC to cancel. Simply fire an entire magazine with your weapon (without moving the mouse) and hit tab afterwards to safe the recording" << std::endl;
+	std::cout << "!!! WARNING: WILL HOOK INTO CSGO !!!" << std::endl << "hit TAB to start recording, ESC to cancel, and ENTER to finish. Simply fire an entire magazine with your weapon (without moving the mouse) and hit tab afterwards to safe the recording" << std::endl;
 
 	while (true) {
 		if (GetAsyncKeyState(VK_TAB) & 0x8000) {
-			continue;
+			std::cout << "recording started!" << std::endl;
+			break;
 		}
 		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
 			return;
@@ -97,7 +98,11 @@ void record() {
 
 			// afterwards we will need to process these recordings, we can't record too fast otherwise 
 			// we can't sync up properly in our recoil compensation
-			nanosleep(200000);
+			// increase until recoil doesnt call wtf in std::cout
+			nanosleep(1600000);
+		}else if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+			std::cout << "recording finished!" << std::endl;
+			break;
 		}
 	}
 
@@ -107,5 +112,5 @@ void record() {
 	file.write((char*)records.data(), size);
 	file.close();
 
-	std::cout << "weapon recorded!" << std::endl;
+	std::cout << "recording saved!" << std::endl;
 }

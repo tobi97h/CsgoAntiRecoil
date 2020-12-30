@@ -1,6 +1,5 @@
 #include "Recoil.h"
 
-
 void Recoil::loop() {
 	while (true) {
 		// default windows sleep is fine
@@ -14,8 +13,8 @@ void Recoil::loop() {
 
 			Recoil_Weapon* weapon = current_weapon.load();
 
-			float movex_px_pool = 0;
-			float movey_px_pool = 0;
+			float move_x_px_pool = 0;
+			float move_y_px_pool = 0;
 
 			// iterate here as fast as possible
 			for (int i = 1; i < weapon->record.size() && GetAsyncKeyState(VK_LBUTTON) & 0x8000; i++) {
@@ -31,39 +30,43 @@ void Recoil::loop() {
 				float change_x = previous.aimpunch_x - current.aimpunch_x;
 				float change_y = previous.aimpunch_y - current.aimpunch_y;
 
-			
 				// since aim punch never goes up, so its one dimensional?
 				// you somehow have to multiply it by two to get the changes
 				// that need to be reflected in the view angles
-				movex_px_pool += change_x * factor_x * 2;
-				movey_px_pool += change_y * factor_y * 2;
+				move_x_px_pool += change_x * factor_x * 2;
+				move_y_px_pool += change_y * factor_y * 2;
 
 				// x adjust
-				float fullx_px = floor(movex_px_pool);
+				float full_x_px = floor(move_x_px_pool);
 
 				// y adjust
-				float fully_px = floor(movey_px_pool);
+				float full_y_px = floor(move_y_px_pool);
 
-				// only move if we can move more than one px
-				if (fullx_px > 1 || fullx_px < -1) {
+				bool move_x = full_x_px > 1 || full_x_px < -1;
+				bool move_y = full_y_px > 1 || full_y_px < -1;
 
-					move(fullx_px, 0);
-
+				if (move_x && move_y) {
+					move(full_x_px, full_y_px);
 					// remove the full pixels from the pool since they have been moved
-					movex_px_pool -= fullx_px;
+					move_x_px_pool -= full_x_px;
+					move_y_px_pool -= full_y_px;
 				}
-
-				if (fully_px > 1 || fully_px < -1) {
-
-					move(0, fully_px);
-
-					movey_px_pool -= fully_px;
+				else if (move_x) {
+					move(full_x_px, 0);
+					move_x_px_pool -= full_x_px;
+				}
+				else if (move_y) {
+					move(0, full_y_px);
+					move_y_px_pool -= full_y_px;
 				}
 
 				LONGLONG passed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_ts).count();
 				LONGLONG left = ns_diff_recordings - passed;
 				if (left > 0) {
 					nanosleep(left);
+				}
+				else {
+					std::cout << "WTF Recording distance to low - can't keep syned! record weapon with higher nano sleep!!" << std::endl;
 				}
 			}
 		}

@@ -69,6 +69,7 @@ BOOLEAN nanosleep(LONGLONG ns) {
 
 
 void move(float x, float y) {
+
 	INPUT tp;
 	tp.type = INPUT_MOUSE;
 	tp.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_MOVE_NOCOALESCE;

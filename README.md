@@ -6,8 +6,9 @@
 
 * (Turn of csgo mouse wheel weapon swapping - otherwise it might get arkward)
 
-* "+fps_max 144" to launch options
+* `+fps_max 144` to launch options
 
+* `cl_showloadout 1` incase hud randomly dissapears
 
 # Concept
 
