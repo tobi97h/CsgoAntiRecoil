@@ -4,3 +4,4 @@ numpy==1.16.3
 opencv-contrib-python==4.4.0.46
 opencv-python==4.4.0.46
 mss==6.1.0
+pywin32==300

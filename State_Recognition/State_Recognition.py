@@ -5,6 +5,7 @@ from mss import mss
 import os
 import time
 import socket
+import win32api, win32con
 
 class Weapon:
     def __init__(self,name, kp, des, img):
@@ -88,39 +89,47 @@ class Recognizer:
             self.s.sendall(bytes)
             self.last_weapon = None
 
-    def loop(self, monitor):
-        while True:
-            print("lop")
-            bw = screen_lower_right(monitor)
 
-            kp, des = self.sift.detectAndCompute(bw,None)
+    def determine(self, monitor):
+        print("det")
+        bw = screen_lower_right(monitor)
 
-            results = []
-            # iterate all weapons and show matches
-            for weapon in self.weapons:
-                wc = self.weapons[weapon]
-                # first comes the big picture, the soruce, then what you want to find in it
-                matches = self.bf.knnMatch(des,wc.des,k=2)
-                # Apply ratio test
-                good = []
-                for m,n in matches:
-                    if m.distance < self.threshold * n.distance:
-                        good.append(m)
+        kp, des = self.sift.detectAndCompute(bw,None)
 
+        results = []
+        # iterate all weapons and show matches
+        for weapon in self.weapons:
+            wc = self.weapons[weapon]
+            # first comes the big picture, the soruce, then what you want to find in it
+            matches = self.bf.knnMatch(des,wc.des,k=2)
+            # Apply ratio test
+            good = []
+            for m,n in matches:
+                if m.distance < self.threshold * n.distance:
+                    good.append(m)
 
-                results.append((wc, len(good)));
+            results.append((wc, len(good)));
  
-            self.sort_send_res(results)
-
-            time.sleep(0.1)
-
-
-
+        self.sort_send_res(results)
+                
 
 reco = Recognizer()
 
+keys = [win32con.VK_ESCAPE, win32con.VK_RETURN, 
+        # Q,E,1,2,3,4,5,6
+        0x51, 0x45, 0x47, 0x31, 0x32, 0x33, 0x34, 0x35]
+
 with mss() as sct:
     # 0 monitor is all monitors - 1 is primary
-    monitor = sct.monitors[1] 
-    reco.loop(monitor)
+    monitor = sct.monitors[1]
+    while True:  
+        for key in keys:
+            if win32api.GetAsyncKeyState(key) & 0x8000:
+                # if any relevant key was hit, call determine a bunch of times
+                for i in range(0,10):
+                    reco.determine(monitor)
+                    time.sleep(0.01)
+                break
+        time.sleep(0.001)
+
 
