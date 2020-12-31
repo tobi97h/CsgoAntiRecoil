@@ -30,10 +30,21 @@ def screen_lower_right(monitor):
 class Recognizer:
 
     def __init__(self):
+        # feature match ditstance count 1-0
         self.threshold = 0.4
+
+        # min feature matches to count as weapon found
         self.min_matched = 10
+
+        # ms timestamp of the last match, will be reset externally
         self.last_matched = 0
+
+        # new weapons glow flicker on and off
+        # if a weapon is matched and then instantly unmatched within this
+        # period the unmatch wont count
         self.ms_none_match = 4000
+
+        # last matched weapon to compare
         self.last_weapon = None
 
         # connect to recoil_control
@@ -67,6 +78,7 @@ class Recognizer:
             self.weapons[template] = wc
         print()
 
+
     def sort_send_res(self, results):
         res_sorted = sorted(results, key=lambda tup: tup[1])
 
@@ -90,8 +102,8 @@ class Recognizer:
             self.last_weapon = None
 
 
+
     def determine(self, monitor):
-        print("det")
         bw = screen_lower_right(monitor)
 
         kp, des = self.sift.detectAndCompute(bw,None)
@@ -111,25 +123,31 @@ class Recognizer:
             results.append((wc, len(good)));
  
         self.sort_send_res(results)
-                
+              
+        
 
 reco = Recognizer()
 
 keys = [win32con.VK_ESCAPE, win32con.VK_RETURN, 
-        # Q,E,1,2,3,4,5,6
-        0x51, 0x45, 0x47, 0x31, 0x32, 0x33, 0x34, 0x35]
+        # Q,E,B,1,2,3,4,5,6
+        0x51, 0x45, 0x42, 0x47, 0x31, 0x32, 0x33, 0x34, 0x35]
 
 with mss() as sct:
     # 0 monitor is all monitors - 1 is primary
     monitor = sct.monitors[1]
     while True:  
+
+        # if any of the specified keys are pressed
         for key in keys:
             if win32api.GetAsyncKeyState(key) & 0x8000:
                 # if any relevant key was hit, call determine a bunch of times
-                for i in range(0,10):
+                for i in range(0,20):
                     reco.determine(monitor)
                     time.sleep(0.01)
                 break
+
+        # reset the timestamp for the matching flashing weapons
+        reco.last_matched = 0
         time.sleep(0.001)
 
 
