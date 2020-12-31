@@ -90,6 +90,7 @@ class Recognizer:
 
     def loop(self, monitor):
         while True:
+            print("lop")
             bw = screen_lower_right(monitor)
 
             kp, des = self.sift.detectAndCompute(bw,None)
