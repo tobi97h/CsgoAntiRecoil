@@ -87,6 +87,7 @@ class Recognizer:
         ts_millis = time.time() * 1000
 
         if winner[1] > self.min_matched:
+            # dont resent matched weapon
             if self.last_weapon is not winner[0]:
                 # we have a winner with more than min features
                 bytes = (winner[0].name + '\0').encode()
@@ -96,6 +97,7 @@ class Recognizer:
                 self.last_weapon = winner[0]
 
         elif ts_millis - self.last_matched > self.ms_none_match:
+            # only send nothing matched if not flashing weapon
             bytes = ('nothing matched\0').encode()
             self.s.sendall(len(bytes).to_bytes(2, byteorder='little'))
             self.s.sendall(bytes)
