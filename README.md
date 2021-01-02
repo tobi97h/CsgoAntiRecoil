@@ -10,6 +10,8 @@
 
 * `cl_showloadout 1` incase hud randomly dissapears
 
+* flashing weapons for example in warmups are a problem for detection. Simply go for headshot training here
+
 # Concept
 
 ## Python Opencv
