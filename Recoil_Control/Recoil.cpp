@@ -17,7 +17,7 @@ void Recoil::loop() {
 			float move_y_px_pool = 0;
 
 			// iterate here as fast as possible
-			for (int i = 1; i < weapon->record.size() && GetAsyncKeyState(VK_LBUTTON) & 0x8000; i++) {
+			for (int i = 1; i < weapon->record.size() && GetAsyncKeyState(VK_LBUTTON) & 0x8000 && current_weapon.load() != NULL; i++) {
 
 				auto start_ts = std::chrono::high_resolution_clock::now();
 

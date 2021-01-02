@@ -36,14 +36,6 @@ class Recognizer:
         # min feature matches to count as weapon found
         self.min_matched = 10
 
-        # ms timestamp of the last match, will be reset externally
-        self.last_matched = 0
-
-        # new weapons glow flicker on and off
-        # if a weapon is matched and then instantly unmatched within this
-        # period the unmatch wont count
-        self.ms_none_match = 4000
-
         # last matched weapon to compare
         self.last_weapon = None
 
@@ -84,8 +76,6 @@ class Recognizer:
 
         winner = res_sorted[-1]
 
-        ts_millis = time.time() * 1000
-
         if winner[1] > self.min_matched:
             # dont resent matched weapon
             if self.last_weapon is not winner[0]:
@@ -93,10 +83,9 @@ class Recognizer:
                 bytes = (winner[0].name + '\0').encode()
                 self.s.sendall(len(bytes).to_bytes(2, byteorder='little'))
                 self.s.sendall(bytes)
-                self.last_matched = ts_millis
                 self.last_weapon = winner[0]
 
-        elif ts_millis - self.last_matched > self.ms_none_match:
+        else:
             # only send nothing matched if not flashing weapon
             bytes = ('nothing matched\0').encode()
             self.s.sendall(len(bytes).to_bytes(2, byteorder='little'))
@@ -130,7 +119,7 @@ class Recognizer:
 
 reco = Recognizer()
 
-keys = [win32con.VK_ESCAPE, win32con.VK_RETURN, 
+keys = [win32con.VK_ESCAPE, win32con.VK_RETURN, win32con.VK_LBUTTON,
         # Q,E,B,1,2,3,4,5,6
         0x51, 0x45, 0x42, 0x47, 0x31, 0x32, 0x33, 0x34, 0x35]
 
@@ -143,13 +132,12 @@ with mss() as sct:
         for key in keys:
             if win32api.GetAsyncKeyState(key) & 0x8000:
                 # if any relevant key was hit, call determine a bunch of times
-                for i in range(0,20):
+                for i in range(0,5):
                     reco.determine(monitor)
                     time.sleep(0.01)
                 break
 
         # reset the timestamp for the matching flashing weapons
-        reco.last_matched = 0
         time.sleep(0.001)
 
 
