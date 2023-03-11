@@ -1,3 +1,7 @@
+# Project
+
+This project provides anti recoil for the game csgo. It uses custom generated vectors and open cv for detecting the currently selected weapon. This is to prevent hooking into the game triggering anti cheat services.
+
 # Prep CSGO
 
 * Set Project -> Properties -> General -> Advanced Set option to "Use Unicode Character Set"(Multi-Byte Character Set)
